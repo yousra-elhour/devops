@@ -45,7 +45,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build -t flask-app:latest .
-          # docker tag flask-app:latest ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
+          docker tag flask-app:latest ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
 
       - name: Deploy to production
