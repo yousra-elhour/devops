@@ -46,19 +46,14 @@ jobs:
         run: |
           docker build -t flask-app:latest .
           docker tag flask-app:latest ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
-          # docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
-
-      - name: Build and push Docker image
-        run: |
-          # docker build -t flask-app:latest .
-          # docker tag flask-app:latest ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
 
-      - name: Deploy to production
+      - name: Verify Docker image was pushed
         run: |
-          echo "hello"
-          echo "Deploying Flask app to production..."
+          echo "Verifying Docker image was pushed successfully..."
           echo "Docker image: ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}"
+          docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
