@@ -42,17 +42,36 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Debug environment variables
         run: |
+          echo "GitHub SHA: ${{ github.sha }}"
+          echo "Docker Username (masked): ${{ secrets.DOCKER_USERNAME }}"
+          echo "Checking if DOCKER_USERNAME is set..."
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
+            echo "ERROR: DOCKER_USERNAME secret is not set!"
+            exit 1
+          fi
+
+      - name: Build and push Docker image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          echo "Building Docker image..."
           docker build -t flask-app:latest .
-          docker tag flask-app:latest ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
+          echo "Tagging image as: ${DOCKER_USERNAME}/flask-app:${COMMIT_SHA}"
+          docker tag flask-app:latest ${DOCKER_USERNAME}/flask-app:${COMMIT_SHA}
+          echo "Pushing to Docker Hub..."
+          docker push ${DOCKER_USERNAME}/flask-app:${COMMIT_SHA}
 
       - name: Verify Docker image was pushed
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           echo "Verifying Docker image was pushed successfully..."
-          echo "Docker image: ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}"
-          docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}
+          echo "Docker image: ${DOCKER_USERNAME}/flask-app:${COMMIT_SHA}"
+          docker pull ${DOCKER_USERNAME}/flask-app:${COMMIT_SHA}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
