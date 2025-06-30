@@ -50,7 +50,7 @@ jobs:
 
       - name: Deploy to production
         run: |
-          echo "DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}"
+          echo "hello"
           echo "Deploying Flask app to production..."
           echo "Docker image: ${{ secrets.DOCKER_USERNAME }}/flask-app:${{ github.sha }}"
       - name: Deploy to Azure Web App
