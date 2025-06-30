@@ -2,9 +2,9 @@ name: CI/CD for Flask App
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "master", "feature/flask-app"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "master", "feature/flask-app"]
 
 jobs:
   build:
